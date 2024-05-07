@@ -276,7 +276,6 @@ void test_updateTransitiveRelations(double& tests_passed)
     }
 }
 
-
 int main()
 {
     setlocale(LC_ALL, "Ukrainian");
