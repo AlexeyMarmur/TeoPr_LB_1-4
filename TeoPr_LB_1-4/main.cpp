@@ -123,19 +123,175 @@ void printMatrix(const vector<string>& numbers, const vector<vector<int>>& matri
 //
 // Tests
 //
+void test_compareNumbers(double& tests_passed)
+{
+    vector<vector<int>> matrix(12, vector<int>(12, 0));
+    bool allTestsPassed = true;
+
+    // Тестируем, когда первое число лучше
+    if (compareNumbers("2111", "3111", matrix) != 1) {
+        cout << "Test failed: Expected '2111' to be better than '3111'." << endl;
+        allTestsPassed = false;
+    }
+    if (matrix[0][1] != 1) {
+        cout << "Test failed: Matrix value not updated correctly for '2111' vs '3111'." << endl;
+        allTestsPassed = false;
+    }
+    if (matrix[1][0] != 0) {
+        cout << "Test failed: Matrix value updated incorrectly for '2111' vs '3111'." << endl;
+        allTestsPassed = false;
+    }
+
+    // Тестируем, когда второе число лучше
+    if (compareNumbers("3111", "2111", matrix) != 3) {
+        cout << "Test failed: Expected '3111' to be worse than '2111'." << endl;
+        allTestsPassed = false;
+    }
+    if (matrix[0][1] != 1) {
+        cout << "Test failed: Matrix value not updated correctly for '3111' vs '2111'." << endl;
+        allTestsPassed = false;
+    }
+    if (matrix[1][0] != 3) {
+        cout << "Test failed: Matrix value updated incorrectly for '3111' vs '2111'." << endl;
+        allTestsPassed = false;
+    }
+
+    // Тестируем, когда числа равны
+    if (compareNumbers("2111", "2111", matrix) != 2) {
+        cout << "Test failed: Expected '2111' and '2111' to be equal." << endl;
+        allTestsPassed = false;
+    }
+    if (matrix[0][0] != 2) {
+        cout << "Test failed: Matrix value not updated correctly for '2111' vs '2111'." << endl;
+        allTestsPassed = false;
+    }
+
+    if (allTestsPassed) {
+        cout << "test_compareNumbers passed." << endl << endl;
+        tests_passed++;
+    }
+    else
+        cout << "test_compareNumbers failed." << endl << endl;
+}
+
+void test_matrix_initialization(double& tests_passed)
+{
+    vector<vector<int>> matrix(12, vector<int>(12, 0));
+
+    // Заполняем диагональ элементами 2
+    for (int i = 0; i < 12; ++i)
+    {
+        matrix[i][i] = 2;
+    }
+
+    bool allTestsPassed = true;
+    // Проверяем диагональные элементы
+    for (int i = 0; i < 12; ++i)
+    {
+        if (matrix[i][i] != 2) {
+            cout << "Test failed: Matrix value not initialized correctly at position [" << i << "][" << i << "]." << endl;
+            allTestsPassed = false;
+        }
+    }
+
+    if (allTestsPassed) {
+        cout << "test_matrix_initialization passed." << endl << endl;
+        tests_passed++;
+    }
+    else {
+        cout << "test_matrix_initialization failed." << endl << endl;
+    }
+}
+
+void test_ranked_numbers(double& tests_passed)
+{
+    ranked_numbers.clear();
+
+    // Заполняем вектор пар числами из numbers и их рангами из epors
+    for (int i = 0; i < numbers.size(); ++i)
+    {
+        ranked_numbers.push_back(make_pair(numbers[i], i + 1));
+    }
+
+    bool allTestsPassed = true;
+    // Проверяем, что ranked_numbers содержит правильные пары число-ранг
+    for (int i = 0; i < numbers.size(); ++i)
+    {
+        if (ranked_numbers[i].first != numbers[i] || ranked_numbers[i].second != i + 1) {
+            cout << "Test failed: Incorrect pair at index " << i << " in ranked_numbers." << endl;
+            allTestsPassed = false;
+        }
+    }
+
+    if (allTestsPassed) {
+        cout << "test_ranked_numbers_initialization passed." << endl << endl;
+        tests_passed++;
+    }
+    else {
+        cout << "test_ranked_numbers_initialization failed." << endl << endl;
+    }
+}
+
+void test_updateTransitiveRelations(double& tests_passed)
+{
+    vector<vector<int>> matrix = {
+        {2, 1, 0, 0},
+        {0, 2, 1, 0},
+        {0, 0, 2, 1},
+        {0, 0, 0, 2}
+    };
+
+    vector<vector<int>> expectedMatrix = {
+        {2, 1, 1, 1},
+        {0, 2, 1, 1},
+        {0, 0, 2, 1},
+        {0, 0, 0, 2}
+    };
+
+    updateTransitiveRelations(matrix);
+
+    bool allTestsPassed = true;
+
+    for (int i = 0; i < matrix.size(); ++i)
+    {
+        for (int j = 0; j < matrix.size(); ++j)
+        {
+            if (matrix[i][j] != expectedMatrix[i][j])
+            {
+                cout << "Test failed: Matrix value not updated correctly at position [" << i << "][" << j << "]." << endl;
+                cout << "Expected: " << expectedMatrix[i][j] << ", got: " << matrix[i][j] << endl;
+                allTestsPassed = false;
+            }
+        }
+    }
+
+    if (allTestsPassed)
+    {
+        cout << "test_updateTransitiveRelations passed." << endl << endl;
+        tests_passed++;
+    }
+    else
+    {
+        cout << "test_updateTransitiveRelations failed." << endl << endl;
+    }
+}
 
 
 int main()
 {
-    setlocale(LC_ALL, "Russian");
+    setlocale(LC_ALL, "Ukrainian");
     char user_choice;
     cout << "Enter 'R' to run the program or 'T' to run tests: ";
     cin >> user_choice;
 
     if (user_choice == 'T') {
         double tests_passed = 0;
-        double all_tests = 3;
+        double all_tests = 4;
         cout << "Running tests..." << endl << endl;
+        test_compareNumbers(tests_passed);
+        test_matrix_initialization(tests_passed);
+        test_ranked_numbers(tests_passed);
+        test_updateTransitiveRelations(tests_passed);
 
         cout << "Values of passed tests: " << tests_passed << endl;
 
