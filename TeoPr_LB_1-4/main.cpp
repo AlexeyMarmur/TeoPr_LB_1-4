@@ -9,12 +9,12 @@
 
 using namespace std;
 
+// Scales of alternatives
 vector<string> numbers = { "2111", "3111", "4111", "1211", "1311", "1411", "1121", "1131", "1141", "1112", "1113", "1114" };
-
 vector<string> epors = { "1111", "1121", "2111", "1211", "1112", "3111", "1113", "4111", "1131", "1311", "1114", "1411", "1141" };
-
 vector<pair<string, int>> ranked_numbers;
 
+// Input data from the decision maker
 int initial[4][4] = {
     {4, 1, 2, 3},
     { 3, 4, 1, 2},
@@ -28,6 +28,7 @@ int criteriaValues[4][4] = {
   { 4111, 1411, 1141, 1114}
 };
 
+// Initialisation of all functions
 void fillDiagonalWithTwo(vector<vector<int>>& matrix, const vector<string>& numbers);
 void compareAndFillMatrix(vector<vector<int>>& matrix, const vector<string>& numbers);
 void printInitialAndFinalMatrix(const vector<vector<int>>& matrix, const vector<string>& numbers);
@@ -46,7 +47,7 @@ void test_updateTransitiveRelations(double& tests_passed);
 
 int main()
 {
-    setlocale(LC_ALL, "Russian");
+    setlocale(LC_ALL, "Ukrainian");
     char user_choice;
     cout << "Enter 'R' to run the program or 'T' to run tests: ";
     cin >> user_choice;
@@ -122,6 +123,10 @@ int main()
     return 0;
 }
 
+///
+/// Funñtion
+/// 
+
 // Function to compare two numbers based on user input and existing matrix
 int compareNumbers(const string& num1, const string& num2, vector<vector<int>>& matrix)
 {
@@ -144,6 +149,7 @@ int compareNumbers(const string& num1, const string& num2, vector<vector<int>>& 
     return choice;
 }
 
+// Function of transitive logic
 void updateTransitiveRelations(vector<vector<int>>& matrix)
 {
     int n = matrix.size();
@@ -214,12 +220,14 @@ void printMatrix(const vector<string>& numbers, const vector<vector<int>>& matri
     }
 }
 
+// Function to fill the diagonal with 2
 void fillDiagonalWithTwo(vector<vector<int>>& matrix, const vector<string>& numbers) {
     for (int i = 0; i < numbers.size(); ++i) {
         matrix[i][i] = 2;
     }
 }
 
+// Function that print the matrix and let the user compare numbers
 void compareAndFillMatrix(vector<vector<int>>& matrix, const vector<string>& numbers) {
     cout << "Initial matrix:" << endl;
     for (int i = 0; i < numbers.size(); ++i) {
@@ -236,6 +244,7 @@ void compareAndFillMatrix(vector<vector<int>>& matrix, const vector<string>& num
     printMatrix(numbers, matrix);
 }
 
+// Function print print initial and final matrix
 void printInitialAndFinalMatrix(const vector<vector<int>>& matrix, const vector<string>& numbers) {
     cout << "Initial matrix:" << endl;
     printMatrix(numbers, matrix);
@@ -243,6 +252,7 @@ void printInitialAndFinalMatrix(const vector<vector<int>>& matrix, const vector<
     printMatrix(numbers, matrix);
 }
 
+// Function that print alternatives due the task
 void printAlternatives(const vector<string>& numbers, const vector<pair<string, int>>& ranked_numbers) {
     cout << "A set of alternatives to the first reference situation:" << endl;
     for (const auto& num : numbers) {
@@ -263,6 +273,7 @@ void printAlternatives(const vector<string>& numbers, const vector<pair<string, 
     cout << endl;
 }
 
+// Function that create Rank for each number to compare with epors (a single advice scale)
 void createRankedNumbers(const vector<string>& numbers, const vector<string>& epors) {
     ranked_numbers.clear();
     for (int i = 0; i < numbers.size(); ++i) {
@@ -275,6 +286,7 @@ void createRankedNumbers(const vector<string>& numbers, const vector<string>& ep
         });
 }
 
+// Function that print vector estimation
 void printVectorValuation(const int initial[4][4]) {
     cout << "Vector valuation (initial):" << endl;
     for (int i = 0; i < 4; ++i) {
@@ -286,6 +298,7 @@ void printVectorValuation(const int initial[4][4]) {
     cout << endl;
 }
 
+// Function that rewrite initial matrix by epors numbers
 void createInitialByEporsMatrix(const int initial[4][4], const map<string, int>& eporsToIndex, int initialByEpors[4][4]) {
     for (int i = 0; i < 4; ++i) {
         for (int j = 0; j < 4; ++j) {
@@ -308,7 +321,7 @@ void createInitialByEporsMatrix(const int initial[4][4], const map<string, int>&
     }
 }
 
-
+// Function that print initial matrix by epors numbers
 void printInitialByEporsMatrix(const int initialByEpors[4][4]) {
     cout << "Initial by a single ordinal scale:" << endl;
     for (int i = 0; i < 4; ++i) {
@@ -319,6 +332,7 @@ void printInitialByEporsMatrix(const int initialByEpors[4][4]) {
     }
 }
 
+// Function that sort new matrix 
 void createSortedInitialByEporsMatrix(const int initialByEpors[4][4], int sortedInitialByEpors[4][4]) {
     for (int i = 0; i < 4; ++i) {
         for (int j = 0; j < 4; ++j) {
@@ -328,6 +342,7 @@ void createSortedInitialByEporsMatrix(const int initialByEpors[4][4], int sorted
     }
 }
 
+// Function that print new sorted matrix 
 void printSortedInitialByEporsMatrix(const int sortedInitialByEpors[4][4]) {
     cout << "Sorted Initial by a single ordinal scale:" << endl;
     for (int i = 0; i < 4; ++i) {
@@ -339,6 +354,7 @@ void printSortedInitialByEporsMatrix(const int sortedInitialByEpors[4][4]) {
     cout << endl;
 }
 
+// Function that finds the best alternative, which can be the smallest number in the string
 void findBestAlternative(const int sortedInitialByEpors[4][4]) {
     int minRowIndex = 0;
     for (int i = 1; i < 4; ++i) {
@@ -353,9 +369,11 @@ void findBestAlternative(const int sortedInitialByEpors[4][4]) {
     cout << endl;
 }
 
-//
-// Tests
-//
+///
+/// Tests
+///
+
+// Function that tests our compairing numbers
 void test_compareNumbers(double& tests_passed)
 {
     vector<vector<int>> matrix(12, vector<int>(12, 0));
@@ -406,6 +424,8 @@ void test_compareNumbers(double& tests_passed)
     else
         cout << "test_compareNumbers failed." << endl << endl;
 }
+
+// Function that tests matrix initilization
 void test_matrix_initialization(double& tests_passed)
 {
     vector<vector<int>> matrix(12, vector<int>(12, 0));
@@ -434,6 +454,8 @@ void test_matrix_initialization(double& tests_passed)
         cout << "test_matrix_initialization failed." << endl << endl;
     }
 }
+
+// Function that tests the ranking of numbers
 void test_ranked_numbers(double& tests_passed)
 {
     ranked_numbers.clear();
@@ -462,6 +484,8 @@ void test_ranked_numbers(double& tests_passed)
         cout << "test_ranked_numbers_initialization failed." << endl << endl;
     }
 }
+
+// Function that tests transitive relations in matrix due user choice
 void test_updateTransitiveRelations(double& tests_passed)
 {
     vector<vector<int>> matrix = {
