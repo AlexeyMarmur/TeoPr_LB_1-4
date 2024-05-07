@@ -128,7 +128,7 @@ void test_compareNumbers(double& tests_passed)
     vector<vector<int>> matrix(12, vector<int>(12, 0));
     bool allTestsPassed = true;
 
-    // Тестируем, когда первое число лучше
+    // Testing when the first number is better
     if (compareNumbers("2111", "3111", matrix) != 1) {
         cout << "Test failed: Expected '2111' to be better than '3111'." << endl;
         allTestsPassed = false;
@@ -142,7 +142,7 @@ void test_compareNumbers(double& tests_passed)
         allTestsPassed = false;
     }
 
-    // Тестируем, когда второе число лучше
+    // Testing when the second number is better
     if (compareNumbers("3111", "2111", matrix) != 3) {
         cout << "Test failed: Expected '3111' to be worse than '2111'." << endl;
         allTestsPassed = false;
@@ -156,7 +156,7 @@ void test_compareNumbers(double& tests_passed)
         allTestsPassed = false;
     }
 
-    // Тестируем, когда числа равны
+    // Test when the numbers are equal
     if (compareNumbers("2111", "2111", matrix) != 2) {
         cout << "Test failed: Expected '2111' and '2111' to be equal." << endl;
         allTestsPassed = false;
@@ -177,14 +177,14 @@ void test_matrix_initialization(double& tests_passed)
 {
     vector<vector<int>> matrix(12, vector<int>(12, 0));
 
-    // Заполняем диагональ элементами 2
+    // Fill the diagonal with elements 2
     for (int i = 0; i < 12; ++i)
     {
         matrix[i][i] = 2;
     }
 
     bool allTestsPassed = true;
-    // Проверяем диагональные элементы
+    // Check diagonal elements
     for (int i = 0; i < 12; ++i)
     {
         if (matrix[i][i] != 2) {
@@ -205,14 +205,14 @@ void test_ranked_numbers(double& tests_passed)
 {
     ranked_numbers.clear();
 
-    // Заполняем вектор пар числами из numbers и их рангами из epors
+    // Fill the vector of pairs with numbers from numbers and their ranks from epors
     for (int i = 0; i < numbers.size(); ++i)
     {
         ranked_numbers.push_back(make_pair(numbers[i], i + 1));
     }
 
     bool allTestsPassed = true;
-    // Проверяем, что ranked_numbers содержит правильные пары число-ранг
+    // Check that ranked_numbers contains correct number-rank pairs
     for (int i = 0; i < numbers.size(); ++i)
     {
         if (ranked_numbers[i].first != numbers[i] || ranked_numbers[i].second != i + 1) {
@@ -352,20 +352,20 @@ int main()
         cout << endl;
 
 
-        // Заполняем вектор пар числами из numbers и их рангами из epors
+        // Fill the vector of pairs with numbers from numbers and their ranks from epors
         for (int i = 0; i < numbers.size(); ++i)
         {
-            ranked_numbers.push_back(make_pair(numbers[i], i + 1)); // Используем i+1 как начальный ранг
+            ranked_numbers.push_back(make_pair(numbers[i], i + 1)); // Use i+1 as the initial rank
         }
 
-        // Сортируем ranked_numbers по числовым значениям в соответствии с порядком в epors
+        // Sort ranked_numbers by numeric values according to the order in epors
         sort(ranked_numbers.begin(), ranked_numbers.end(), [&](const pair<string, int>& a, const pair<string, int>& b) {
             int posA = find(epors.begin(), epors.end(), a.first) - epors.begin();
             int posB = find(epors.begin(), epors.end(), b.first) - epors.begin();
             return posA < posB;
             });
 
-        // Выводим упорядоченные числа
+        // Output the ordered numbers
         cout << "Sorted set of alternatives to the first reference situation:" << endl;
         for (const auto& num : ranked_numbers) {
             cout << num.first << "\t";
@@ -392,14 +392,14 @@ int main()
         }
         cout << endl;
 
-        // Создаем карту для сопоставления чисел из epors их порядковыми номерами
+        // Create a map to match the numbers from epors with their ordinal numbers
         map<string, int> eporsToIndex;
         for (int i = 0; i < epors.size(); ++i)
         {
             eporsToIndex[epors[i]] = i + 1;
         }
 
-        // Создаем новую матрицу initialByEpors
+        // Create a new matrix initialByEpors
         int initialByEpors[4][4];
         for (int i = 0; i < 4; ++i)
         {
@@ -412,7 +412,7 @@ int main()
             }
         }
 
-        // Выводим новую матрицу initialByEpors
+        // Output new matrix initialByEpors
         cout << "Initial by a single ordinal scale:" << endl;
         for (int i = 0; i < 4; ++i)
         {
@@ -423,21 +423,21 @@ int main()
             cout << endl;
         }
 
-        // Создаем новую матрицу sortedInitialByEpors
+        // Create a new matrix sortedInitialByEpors
         int sortedInitialByEpors[4][4];
         for (int i = 0; i < 4; ++i)
         {
-            // Копируем строчку из initialByEpors в sortedInitialByEpors
+            // Copy the line from initialByEpors to sortedInitialByEpors
             for (int j = 0; j < 4; ++j)
             {
                 sortedInitialByEpors[i][j] = initialByEpors[i][j];
             }
-            // Сортируем строчку
+            // Sort the line
             std::sort(sortedInitialByEpors[i], sortedInitialByEpors[i] + 4);
         }
         cout << endl;
 
-        // Выводим новую матрицу sortedInitialByEpors
+        // Output new matrix sortedInitialByEpors
         cout << "Sorted Initial by a single ordinal scale:" << endl;
         for (int i = 0; i < 4; ++i)
         {
@@ -449,7 +449,7 @@ int main()
         }
         cout << endl;
 
-        // Находим строчку с наименьшими числами
+        // Find the line with the smallest numbers
         int minRowIndex = 0;
         for (int i = 1; i < 4; ++i)
         {
@@ -458,7 +458,7 @@ int main()
                 minRowIndex = i;
             }
         }
-        // Выводим строчку с наименьшими числами
+        // Output the line with the smallest numbers
         cout << "The best alternative:" << endl;
         for (int j = 0; j < 4; ++j)
         {
@@ -468,7 +468,7 @@ int main()
     }
 
     else {
-        std::cout << "Invalid choice. Please enter 'R' or 'T'." << std::endl;
+        cout << "Invalid choice. Please enter 'R' or 'T'." << std::endl;
     }
 
     return 0;
