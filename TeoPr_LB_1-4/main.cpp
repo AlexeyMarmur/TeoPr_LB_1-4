@@ -173,7 +173,6 @@ void test_compareNumbers(double& tests_passed)
     else
         cout << "test_compareNumbers failed." << endl << endl;
 }
-
 void test_matrix_initialization(double& tests_passed)
 {
     vector<vector<int>> matrix(12, vector<int>(12, 0));
@@ -202,7 +201,6 @@ void test_matrix_initialization(double& tests_passed)
         cout << "test_matrix_initialization failed." << endl << endl;
     }
 }
-
 void test_ranked_numbers(double& tests_passed)
 {
     ranked_numbers.clear();
@@ -231,7 +229,6 @@ void test_ranked_numbers(double& tests_passed)
         cout << "test_ranked_numbers_initialization failed." << endl << endl;
     }
 }
-
 void test_updateTransitiveRelations(double& tests_passed)
 {
     vector<vector<int>> matrix = {
@@ -275,10 +272,9 @@ void test_updateTransitiveRelations(double& tests_passed)
         cout << "test_updateTransitiveRelations failed." << endl << endl;
     }
 }
-
 int main()
 {
-    setlocale(LC_ALL, "Ukrainian");
+    setlocale(LC_ALL, "Russian");
     char user_choice;
     cout << "Enter 'R' to run the program or 'T' to run tests: ";
     cin >> user_choice;
