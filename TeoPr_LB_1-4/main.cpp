@@ -9,6 +9,39 @@
 
 using namespace std;
 
+class Comparator {
+public:
+    virtual int compare(const string& num1, const string& num2, vector<vector<int>>& matrix) = 0;
+    virtual ~Comparator() {}
+};
+
+class SimpleComparator : public Comparator {
+private:
+    const vector<string>& numbers;
+
+public:
+    SimpleComparator(const vector<string>& numbers) : numbers(numbers) {}
+
+    int compare(const string& num1, const string& num2, vector<vector<int>>& matrix) override {
+        int i = find(numbers.begin(), numbers.end(), num1) - numbers.begin();
+        int j = find(numbers.begin(), numbers.end(), num2) - numbers.begin();
+
+        if (matrix[i][j] != 0) {
+            return matrix[i][j];
+        }
+
+        int choice;
+        do {
+            cout << "Comparing " << num1 << " and " << num2 << ". Enter 1 if " << num1 << " is better, 2 if they are equal, 3 if " << num2 << " is better: ";
+            cin >> choice;
+        } while (choice < 1 || choice > 3);
+
+        matrix[i][j] = choice; // Update the matrix with the user's choice
+        return choice;
+    }
+};
+
+
 // Scales of alternatives
 vector<string> numbers = { "2111", "3111", "4111", "1211", "1311", "1411", "1121", "1131", "1141", "1112", "1113", "1114" };
 vector<string> epors = { "1111", "1121", "2111", "1211", "1112", "3111", "1113", "4111", "1131", "1311", "1114", "1411", "1141" };
@@ -30,7 +63,7 @@ int criteriaValues[4][4] = {
 
 // Initialisation of all functions
 void fillDiagonalWithTwo(vector<vector<int>>& matrix, const vector<string>& numbers);
-void compareAndFillMatrix(vector<vector<int>>& matrix, const vector<string>& numbers);
+void compareAndFillMatrix(vector<vector<int>>& matrix, const vector<string>& numbers, Comparator& comparator);
 void printInitialAndFinalMatrix(const vector<vector<int>>& matrix, const vector<string>& numbers);
 void printAlternatives(const vector<string>& numbers, const vector<pair<string, int>>& ranked_numbers);
 void createRankedNumbers(const vector<string>& numbers, const vector<string>& epors);
@@ -44,6 +77,8 @@ void test_compareNumbers(double& tests_passed);
 void test_matrix_initialization(double& tests_passed);
 void test_ranked_numbers(double& tests_passed);
 void test_updateTransitiveRelations(double& tests_passed);
+void runTests();
+void runProgram();
 
 int main()
 {
@@ -53,69 +88,11 @@ int main()
     cin >> user_choice;
 
     if (user_choice == 'T') {
-        double tests_passed = 0;
-        double all_tests = 4;
-        cout << "Running tests..." << endl << endl;
-        test_compareNumbers(tests_passed);
-        test_matrix_initialization(tests_passed);
-        test_ranked_numbers(tests_passed);
-        test_updateTransitiveRelations(tests_passed);
-
-        cout << "Values of passed tests: " << tests_passed << endl;
-
-        if (tests_passed == all_tests)
-        {
-            cout << "All tests passed - 100%" << endl;
-        }
-        else
-        {
-            cout << "Not all tests have been passed. Passed : " << tests_passed << " of " << all_tests << endl;
-            cout << "Percentage: " << (tests_passed / all_tests) * 100 << "%" << endl << endl;
-        }
-
+        runTests();
     }
     else if (user_choice == 'R') {
-
-        cout << "Running program..." << endl << endl;
-
-        // Matrix to store the comparison results
-        vector<vector<int>> matrix = {
-          {2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-          {0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-          {0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-          {0, 0, 0, 2, 1, 1, 0, 0, 0, 0, 0, 0},
-          {0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0},
-          {0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0},
-          {0, 0, 0, 0, 0, 0, 2, 1, 1, 0, 0, 0},
-          {0, 0, 0, 0, 0, 0, 0, 2, 1, 0, 0, 0},
-          {0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0},
-          {0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1},
-          {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1},
-          {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2}
-        };
-
-        fillDiagonalWithTwo(matrix, numbers);
-        compareAndFillMatrix(matrix, numbers);
-        printInitialAndFinalMatrix(matrix, numbers);
-        printAlternatives(numbers, ranked_numbers);
-        printVectorValuation(initial);
-
-        map<string, int> eporsToIndex;
-        for (int i = 0; i < epors.size(); ++i) {
-            eporsToIndex[epors[i]] = i + 1;
-        }
-
-        int initialByEpors[4][4];
-        createInitialByEporsMatrix(initial, eporsToIndex, initialByEpors);
-        printInitialByEporsMatrix(initialByEpors);
-
-        int sortedInitialByEpors[4][4];
-        createSortedInitialByEporsMatrix(initialByEpors, sortedInitialByEpors);
-        printSortedInitialByEporsMatrix(sortedInitialByEpors);
-
-        findBestAlternative(sortedInitialByEpors);
+        runProgram();
     }
-
     else {
         cout << "Invalid choice. Please enter 'R' or 'T'." << std::endl;
     }
@@ -123,30 +100,79 @@ int main()
     return 0;
 }
 
-///
-/// Funñtion
-/// 
+//
+void runTests() {
+    double tests_passed = 0;
+    double all_tests = 4;
+    cout << "Running tests..." << endl << endl;
+    test_compareNumbers(tests_passed);
+    test_matrix_initialization(tests_passed);
+    test_ranked_numbers(tests_passed);
+    test_updateTransitiveRelations(tests_passed);
 
-// Function to compare two numbers based on user input and existing matrix
-int compareNumbers(const string& num1, const string& num2, vector<vector<int>>& matrix)
-{
-    int i = find(numbers.begin(), numbers.end(), num1) - numbers.begin();
-    int j = find(numbers.begin(), numbers.end(), num2) - numbers.begin();
+    cout << "Values of passed tests: " << tests_passed << endl;
 
-    if (matrix[i][j] != 0)
+    if (tests_passed == all_tests)
     {
-        return matrix[i][j];
+        cout << "All tests passed - 100%" << endl;
+    }
+    else
+    {
+        cout << "Not all tests have been passed. Passed : " << tests_passed << " of " << all_tests << endl;
+        cout << "Percentage: " << (tests_passed / all_tests) * 100 << "%" << endl << endl;
+    }
+}
+
+void runProgram() {
+    cout << "Running program..." << endl << endl;
+
+    // Matrix to store the comparison results
+    vector<vector<int>> matrix = {
+      {2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+      {0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+      {0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+      {0, 0, 0, 2, 1, 1, 0, 0, 0, 0, 0, 0},
+      {0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0},
+      {0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0},
+      {0, 0, 0, 0, 0, 0, 2, 1, 1, 0, 0, 0},
+      {0, 0, 0, 0, 0, 0, 0, 2, 1, 0, 0, 0},
+      {0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0},
+      {0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 1},
+      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1},
+      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2}
+    };
+
+    fillDiagonalWithTwo(matrix, numbers);
+    SimpleComparator simpleComparator(numbers);
+    compareAndFillMatrix(matrix, numbers, simpleComparator);
+    printInitialAndFinalMatrix(matrix, numbers);
+    printAlternatives(numbers, ranked_numbers);
+    printVectorValuation(initial);
+
+    map<string, int> eporsToIndex;
+    for (int i = 0; i < epors.size(); ++i) {
+        eporsToIndex[epors[i]] = i + 1;
     }
 
-    int choice;
-    do
-    {
-        cout << "Comparing " << num1 << " and " << num2 << ". Enter 1 if " << num1 << " is better, 2 if they are equal, 3 if " << num2 << " is better: ";
-        cin >> choice;
-    } while (choice < 1 || choice > 3);
+    int initialByEpors[4][4];
+    createInitialByEporsMatrix(initial, eporsToIndex, initialByEpors);
+    printInitialByEporsMatrix(initialByEpors);
 
-    matrix[i][j] = choice; // Update the matrix with the user's choice
-    return choice;
+    int sortedInitialByEpors[4][4];
+    createSortedInitialByEporsMatrix(initialByEpors, sortedInitialByEpors);
+    printSortedInitialByEporsMatrix(sortedInitialByEpors);
+
+    findBestAlternative(sortedInitialByEpors);
+}
+
+///
+/// Funñtion
+///
+
+// Function to compare two numbers based on user input and existing matrix
+int compareNumbers(const string& num1, const string& num2, vector<vector<int>>& matrix, Comparator& comparator)
+{
+    return comparator.compare(num1, num2, matrix);
 }
 
 // Function of transitive logic
@@ -228,14 +254,14 @@ void fillDiagonalWithTwo(vector<vector<int>>& matrix, const vector<string>& numb
 }
 
 // Function that print the matrix and let the user compare numbers
-void compareAndFillMatrix(vector<vector<int>>& matrix, const vector<string>& numbers) {
+void compareAndFillMatrix(vector<vector<int>>& matrix, const vector<string>& numbers, Comparator& comparator) {
     cout << "Initial matrix:" << endl;
     for (int i = 0; i < numbers.size(); ++i) {
         for (int j = i + 1; j < numbers.size(); ++j) {
             cout << "print 1 if better, 2 if equal, 3 if worse" << endl;
             cout << "Comparing " << numbers[i] << " and " << numbers[j] << ": " << endl;
             printMatrix(numbers, matrix);
-            int result = compareNumbers(numbers[i], numbers[j], matrix);
+            int result = compareNumbers(numbers[i], numbers[j], matrix, comparator);
             updateTransitiveRelations(matrix);
             cout << endl;
         }
@@ -332,7 +358,7 @@ void printInitialByEporsMatrix(const int initialByEpors[4][4]) {
     }
 }
 
-// Function that sort new matrix 
+// Function that sort new matrix
 void createSortedInitialByEporsMatrix(const int initialByEpors[4][4], int sortedInitialByEpors[4][4]) {
     for (int i = 0; i < 4; ++i) {
         for (int j = 0; j < 4; ++j) {
@@ -342,7 +368,7 @@ void createSortedInitialByEporsMatrix(const int initialByEpors[4][4], int sorted
     }
 }
 
-// Function that print new sorted matrix 
+// Function that print new sorted matrix
 void printSortedInitialByEporsMatrix(const int sortedInitialByEpors[4][4]) {
     cout << "Sorted Initial by a single ordinal scale:" << endl;
     for (int i = 0; i < 4; ++i) {
@@ -379,8 +405,10 @@ void test_compareNumbers(double& tests_passed)
     vector<vector<int>> matrix(12, vector<int>(12, 0));
     bool allTestsPassed = true;
 
+    SimpleComparator simpleComparator(numbers);
+
     // Testing when the first number is better
-    if (compareNumbers("2111", "3111", matrix) != 1) {
+    if (compareNumbers("2111", "3111", matrix, simpleComparator) != 1) {
         cout << "Test failed: Expected '2111' to be better than '3111'." << endl;
         allTestsPassed = false;
     }
@@ -394,7 +422,7 @@ void test_compareNumbers(double& tests_passed)
     }
 
     // Testing when the second number is better
-    if (compareNumbers("3111", "2111", matrix) != 3) {
+    if (compareNumbers("3111", "2111", matrix, simpleComparator) != 3) {
         cout << "Test failed: Expected '3111' to be worse than '2111'." << endl;
         allTestsPassed = false;
     }
@@ -408,7 +436,7 @@ void test_compareNumbers(double& tests_passed)
     }
 
     // Test when the numbers are equal
-    if (compareNumbers("2111", "2111", matrix) != 2) {
+    if (compareNumbers("2111", "2111", matrix, simpleComparator) != 2) {
         cout << "Test failed: Expected '2111' and '2111' to be equal." << endl;
         allTestsPassed = false;
     }
@@ -425,7 +453,8 @@ void test_compareNumbers(double& tests_passed)
         cout << "test_compareNumbers failed." << endl << endl;
 }
 
-// Function that tests matrix initilization
+
+// Function that tests matrix initialization
 void test_matrix_initialization(double& tests_passed)
 {
     vector<vector<int>> matrix(12, vector<int>(12, 0));
