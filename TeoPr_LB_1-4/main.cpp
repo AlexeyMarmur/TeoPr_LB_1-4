@@ -281,25 +281,25 @@ void updateTransitiveRelations(vector<vector<int>>& matrix)
 
 // Function to print the matrix
 void printMatrix(const vector<string>& numbers, const vector<vector<int>>& matrix) {
-    // Вывод заголовка строк
+    // String header output
     cout << setw(5) << " ";
     for (const auto& num : numbers) {
         cout << setw(5) << num;
     }
     cout << endl;
 
-    // Вывод матрицы с диагональными элементами
+    // Output matrix with diagonal elements
     for (int i = 0; i < matrix.size(); ++i) {
-        cout << setw(5) << numbers[i]; // Вывод номера строки
+        cout << setw(5) << numbers[i]; // Display line number
         for (int j = 0; j < matrix.size(); ++j) {
             if (i == j) {
-                cout << setw(5) << matrix[i][j]; // Вывод диагональных элементов
+                cout << setw(5) << matrix[i][j]; // Output diagonal elements
             }
             else if (i < j) {
-                cout << setw(5) << matrix[i][j]; // Вывод верхнего треугольника
+                cout << setw(5) << matrix[i][j]; // Output of the upper triangle
             }
             else {
-                cout << setw(5) << " "; // Вывод пробелов для нижнего треугольника
+                cout << setw(5) << " "; // Space output for the bottom triangle
             }
         }
         cout << endl;
