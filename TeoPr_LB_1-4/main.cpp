@@ -14,7 +14,6 @@ class Observer {
 public:
     virtual void update() = 0;
 };
-
 void printMatrix(const vector<string>& numbers, const vector<vector<int>>& matrix);
 
 class MatrixObserver : public Observer {
@@ -24,12 +23,60 @@ public:
 
     void update() override {
         cout << "Matrix updated:" << endl;
-        printMatrix(numbers_, matrix_); 
+        printMatrix(numbers_, matrix_);
+    }
+
+    vector<vector<int>>& getMatrix() {
+        return matrix_;
+    }
+
+    const vector<string>& getNumbers() {
+        return numbers_;
     }
 
 private:
     vector<vector<int>>& matrix_;
     const vector<string>& numbers_;
+};
+
+
+// Decorator pattern (Structural)
+class MatrixDecorator : public MatrixObserver {
+public:
+    MatrixDecorator(MatrixObserver& matrixObserver)
+        : MatrixObserver(matrixObserver.getMatrix(), matrixObserver.getNumbers()), decoratedMatrixObserver_(matrixObserver) {}
+
+    void update() override {
+        decoratedMatrixObserver_.update();
+    }
+
+    vector<vector<int>>& getMatrix() {
+        return decoratedMatrixObserver_.getMatrix();
+    }
+
+    const vector<string>& getNumbers() {
+        return decoratedMatrixObserver_.getNumbers();
+    }
+
+private:
+    MatrixObserver& decoratedMatrixObserver_;
+};
+
+class MatrixLoggerDecorator : public MatrixDecorator {
+public:
+    MatrixLoggerDecorator(MatrixObserver& matrixObserver)
+        : MatrixDecorator(matrixObserver) {}
+
+    void update() override {
+        MatrixDecorator::update();
+        logMatrix();
+    }
+
+private:
+    void logMatrix() {
+        cout << "Logging matrix:" << endl;
+        printMatrix(getNumbers(), getMatrix());
+    }
 };
 
 // Strategy pattern
@@ -90,7 +137,8 @@ public:
     }
 
     Observer* createObserver(vector<vector<int>>& matrix, const vector<string>& numbers) override {
-        return new MatrixObserver(matrix, numbers);
+        MatrixObserver* matrixObserver = new MatrixObserver(matrix, numbers);
+        return new MatrixLoggerDecorator(*matrixObserver);
     }
 };
 
@@ -132,6 +180,7 @@ void test_updateTransitiveRelations(double& tests_passed);
 void runTests();
 void runProgram();
 
+
 int main()
 {
     setlocale(LC_ALL, "Ukrainian");
@@ -152,7 +201,7 @@ int main()
     return 0;
 }
 
-// 
+//
 void runTests() {
     double tests_passed = 0;
     double all_tests = 4;
@@ -230,7 +279,7 @@ void runProgram() {
 }
 
 ///
-/// Funсtions
+/// Funсtion
 ///
 
 // Function to compare two numbers based on user input and existing matrix
@@ -281,25 +330,25 @@ void updateTransitiveRelations(vector<vector<int>>& matrix)
 
 // Function to print the matrix
 void printMatrix(const vector<string>& numbers, const vector<vector<int>>& matrix) {
-    // String header output
+    // Вывод заголовка строк
     cout << setw(5) << " ";
     for (const auto& num : numbers) {
         cout << setw(5) << num;
     }
     cout << endl;
 
-    // Output matrix with diagonal elements
+    // Вывод матрицы с диагональными элементами
     for (int i = 0; i < matrix.size(); ++i) {
-        cout << setw(5) << numbers[i]; // Display line number
+        cout << setw(5) << numbers[i]; // Вывод номера строки
         for (int j = 0; j < matrix.size(); ++j) {
             if (i == j) {
-                cout << setw(5) << matrix[i][j]; // Output diagonal elements
+                cout << setw(5) << matrix[i][j]; // Вывод диагональных элементов
             }
             else if (i < j) {
-                cout << setw(5) << matrix[i][j]; // Output of the upper triangle
+                cout << setw(5) << matrix[i][j]; // Вывод верхнего треугольника
             }
             else {
-                cout << setw(5) << " "; // Space output for the bottom triangle
+                cout << setw(5) << " "; // Вывод пробелов для нижнего треугольника
             }
         }
         cout << endl;
