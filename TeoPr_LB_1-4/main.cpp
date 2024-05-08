@@ -9,6 +9,30 @@
 
 using namespace std;
 
+// Observer pattern
+class Observer {
+public:
+    virtual void update() = 0;
+};
+
+void printMatrix(const vector<string>& numbers, const vector<vector<int>>& matrix);
+
+class MatrixObserver : public Observer {
+public:
+    MatrixObserver(vector<vector<int>>& matrix, const vector<string>& numbers)
+        : matrix_(matrix), numbers_(numbers) {}
+
+    void update() override {
+        cout << "Matrix updated:" << endl;
+        printMatrix(numbers_, matrix_); 
+    }
+
+private:
+    vector<vector<int>>& matrix_;
+    const vector<string>& numbers_;
+};
+
+// Strategy pattern
 class Comparator {
 public:
     virtual int compare(const string& num1, const string& num2, vector<vector<int>>& matrix) = 0;
@@ -16,9 +40,6 @@ public:
 };
 
 class SimpleComparator : public Comparator {
-private:
-    const vector<string>& numbers;
-
 public:
     SimpleComparator(const vector<string>& numbers) : numbers(numbers) {}
 
@@ -36,11 +57,42 @@ public:
             cin >> choice;
         } while (choice < 1 || choice > 3);
 
-        matrix[i][j] = choice; // Update the matrix with the user's choice
+        matrix[i][j] = choice;
         return choice;
+    }
+
+private:
+    const vector<string>& numbers;
+};
+
+// Abstract Factory pattern
+class AbstractFactory {
+public:
+    virtual Comparator* createComparator(const vector<string>& numbers) = 0;
+    virtual Observer* createObserver(vector<vector<int>>& matrix, const vector<string>& numbers) = 0;
+};
+
+class ComparatorFactory : public AbstractFactory {
+public:
+    Comparator* createComparator(const vector<string>& numbers) override {
+        return new SimpleComparator(numbers);
+    }
+
+    Observer* createObserver(vector<vector<int>>& matrix, const vector<string>& numbers) override {
+        return nullptr;
     }
 };
 
+class ObserverFactory : public AbstractFactory {
+public:
+    Comparator* createComparator(const vector<string>& numbers) override {
+        return nullptr;
+    }
+
+    Observer* createObserver(vector<vector<int>>& matrix, const vector<string>& numbers) override {
+        return new MatrixObserver(matrix, numbers);
+    }
+};
 
 // Scales of alternatives
 vector<string> numbers = { "2111", "3111", "4111", "1211", "1311", "1411", "1121", "1131", "1141", "1112", "1113", "1114" };
@@ -63,7 +115,7 @@ int criteriaValues[4][4] = {
 
 // Initialisation of all functions
 void fillDiagonalWithTwo(vector<vector<int>>& matrix, const vector<string>& numbers);
-void compareAndFillMatrix(vector<vector<int>>& matrix, const vector<string>& numbers, Comparator& comparator);
+void compareAndFillMatrix(vector<vector<int>>& matrix, const vector<string>& numbers, Comparator& comparator, MatrixObserver& observer);
 void printInitialAndFinalMatrix(const vector<vector<int>>& matrix, const vector<string>& numbers);
 void printAlternatives(const vector<string>& numbers, const vector<pair<string, int>>& ranked_numbers);
 void createRankedNumbers(const vector<string>& numbers, const vector<string>& epors);
@@ -100,7 +152,7 @@ int main()
     return 0;
 }
 
-//
+// 
 void runTests() {
     double tests_passed = 0;
     double all_tests = 4;
@@ -143,8 +195,15 @@ void runProgram() {
     };
 
     fillDiagonalWithTwo(matrix, numbers);
-    SimpleComparator simpleComparator(numbers);
-    compareAndFillMatrix(matrix, numbers, simpleComparator);
+
+    // Abstract Factory pattern
+    AbstractFactory* comparator_factory = new ComparatorFactory();
+    AbstractFactory* observer_factory = new ObserverFactory();
+
+    Comparator* comparator = comparator_factory->createComparator(numbers);
+    MatrixObserver* observer = static_cast<MatrixObserver*>(observer_factory->createObserver(matrix, numbers));
+
+    compareAndFillMatrix(matrix, numbers, *comparator, *observer);
     printInitialAndFinalMatrix(matrix, numbers);
     printAlternatives(numbers, ranked_numbers);
     printVectorValuation(initial);
@@ -163,16 +222,23 @@ void runProgram() {
     printSortedInitialByEporsMatrix(sortedInitialByEpors);
 
     findBestAlternative(sortedInitialByEpors);
+
+    delete comparator_factory;
+    delete observer_factory;
+    delete comparator;
+    delete observer;
 }
 
 ///
-/// Funсtion
+/// Funсtions
 ///
 
 // Function to compare two numbers based on user input and existing matrix
-int compareNumbers(const string& num1, const string& num2, vector<vector<int>>& matrix, Comparator& comparator)
+int compareNumbers(const string& num1, const string& num2, vector<vector<int>>& matrix, Comparator& comparator, MatrixObserver& observer)
 {
-    return comparator.compare(num1, num2, matrix);
+    int result = comparator.compare(num1, num2, matrix);
+    observer.update();
+    return result;
 }
 
 // Function of transitive logic
@@ -214,32 +280,26 @@ void updateTransitiveRelations(vector<vector<int>>& matrix)
 }
 
 // Function to print the matrix
-void printMatrix(const vector<string>& numbers, const vector<vector<int>>& matrix)
-{
-    // Print the header row
+void printMatrix(const vector<string>& numbers, const vector<vector<int>>& matrix) {
+    // Вывод заголовка строк
     cout << setw(5) << " ";
     for (const auto& num : numbers) {
         cout << setw(5) << num;
     }
     cout << endl;
 
-    // Print the matrix with diagonal elements
-    for (int i = 0; i < matrix.size(); ++i)
-    {
-        cout << setw(5) << numbers[i];
-        for (int j = 0; j < matrix.size(); ++j)
-        {
-            if (i == j)
-            {
-                cout << setw(5) << matrix[i][j]; // Print diagonal elements
+    // Вывод матрицы с диагональными элементами
+    for (int i = 0; i < matrix.size(); ++i) {
+        cout << setw(5) << numbers[i]; // Вывод номера строки
+        for (int j = 0; j < matrix.size(); ++j) {
+            if (i == j) {
+                cout << setw(5) << matrix[i][j]; // Вывод диагональных элементов
             }
-            else if (i < j)
-            {
-                cout << setw(5) << matrix[i][j]; // Print upper triangle
+            else if (i < j) {
+                cout << setw(5) << matrix[i][j]; // Вывод верхнего треугольника
             }
-            else
-            {
-                cout << setw(5) << " "; // Print spaces for the lower triangle
+            else {
+                cout << setw(5) << " "; // Вывод пробелов для нижнего треугольника
             }
         }
         cout << endl;
@@ -254,14 +314,14 @@ void fillDiagonalWithTwo(vector<vector<int>>& matrix, const vector<string>& numb
 }
 
 // Function that print the matrix and let the user compare numbers
-void compareAndFillMatrix(vector<vector<int>>& matrix, const vector<string>& numbers, Comparator& comparator) {
+void compareAndFillMatrix(vector<vector<int>>& matrix, const vector<string>& numbers, Comparator& comparator, MatrixObserver& observer) {
     cout << "Initial matrix:" << endl;
     for (int i = 0; i < numbers.size(); ++i) {
         for (int j = i + 1; j < numbers.size(); ++j) {
             cout << "print 1 if better, 2 if equal, 3 if worse" << endl;
             cout << "Comparing " << numbers[i] << " and " << numbers[j] << ": " << endl;
             printMatrix(numbers, matrix);
-            int result = compareNumbers(numbers[i], numbers[j], matrix, comparator);
+            int result = compareNumbers(numbers[i], numbers[j], matrix, comparator, observer);
             updateTransitiveRelations(matrix);
             cout << endl;
         }
@@ -405,10 +465,12 @@ void test_compareNumbers(double& tests_passed)
     vector<vector<int>> matrix(12, vector<int>(12, 0));
     bool allTestsPassed = true;
 
-    SimpleComparator simpleComparator(numbers);
+    ComparatorFactory comparator_factory;
+    Comparator* comparator = comparator_factory.createComparator(numbers);
+    MatrixObserver observer(matrix, numbers);
 
     // Testing when the first number is better
-    if (compareNumbers("2111", "3111", matrix, simpleComparator) != 1) {
+    if (compareNumbers("2111", "3111", matrix, *comparator, observer) != 1) {
         cout << "Test failed: Expected '2111' to be better than '3111'." << endl;
         allTestsPassed = false;
     }
@@ -422,7 +484,7 @@ void test_compareNumbers(double& tests_passed)
     }
 
     // Testing when the second number is better
-    if (compareNumbers("3111", "2111", matrix, simpleComparator) != 3) {
+    if (compareNumbers("3111", "2111", matrix, *comparator, observer) != 3) {
         cout << "Test failed: Expected '3111' to be worse than '2111'." << endl;
         allTestsPassed = false;
     }
@@ -436,7 +498,7 @@ void test_compareNumbers(double& tests_passed)
     }
 
     // Test when the numbers are equal
-    if (compareNumbers("2111", "2111", matrix, simpleComparator) != 2) {
+    if (compareNumbers("2111", "2111", matrix, *comparator, observer) != 2) {
         cout << "Test failed: Expected '2111' and '2111' to be equal." << endl;
         allTestsPassed = false;
     }
@@ -452,7 +514,6 @@ void test_compareNumbers(double& tests_passed)
     else
         cout << "test_compareNumbers failed." << endl << endl;
 }
-
 
 // Function that tests matrix initialization
 void test_matrix_initialization(double& tests_passed)
