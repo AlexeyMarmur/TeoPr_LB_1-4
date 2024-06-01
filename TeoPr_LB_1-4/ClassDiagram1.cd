@@ -15,28 +15,28 @@
     </TypeIdentifier>
   </Class>
   <Class Name="MatrixDecorator">
-    <Position X="10" Y="2" Width="2.25" />
+    <Position X="9.5" Y="2" Width="2.25" />
     <TypeIdentifier>
       <HashCode>ACAAAAAAAAgAAAAIAAAAAAAAAAAAAAQAAAAAAAAEAAA=</HashCode>
       <FileName>main.cpp</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="MatrixLoggerDecorator">
-    <Position X="13" Y="2.25" Width="2" />
+    <Position X="12.25" Y="2.25" Width="2" />
     <TypeIdentifier>
       <HashCode>AACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAEAAA=</HashCode>
       <FileName>main.cpp</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Comparator">
-    <Position X="5" Y="0.5" Width="1.75" />
+    <Position X="5.25" Y="0.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAQAA=</HashCode>
       <FileName>main.cpp</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="SimpleComparator">
-    <Position X="5" Y="2.5" Width="1.75" />
+    <Position X="5.25" Y="2.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAIAAAAAAAAAABAAAAAAAAQAA=</HashCode>
       <FileName>main.cpp</FileName>
