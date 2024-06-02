@@ -254,6 +254,7 @@ void runProgram() {
 
     compareAndFillMatrix(matrix, numbers, *comparator, *observer);
     printInitialAndFinalMatrix(matrix, numbers);
+    createRankedNumbers(numbers, epors);
     printAlternatives(numbers, ranked_numbers);
     printVectorValuation(initial);
 
